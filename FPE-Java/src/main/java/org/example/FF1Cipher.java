@@ -3,6 +3,7 @@ package org.example;
 import com.privacylogistics.FF3Cipher;
 import org.bouncycastle.crypto.AlphabetMapper;
 import org.bouncycastle.crypto.engines.AESEngine;
+import org.bouncycastle.crypto.engines.SM4Engine;
 import org.bouncycastle.crypto.fpe.FPEEngine;
 import org.bouncycastle.crypto.fpe.FPEFF1Engine;
 import org.bouncycastle.crypto.params.FPEParameters;
@@ -30,7 +31,8 @@ public class FF1Cipher {
                 alphabetMapper.getRadix(),
                 Hex.decode(TWEAK)
         );
-        this.engine = new FPEFF1Engine(AESEngine.newInstance());
+//        this.engine = new FPEFF1Engine(AESEngine.newInstance());
+        this.engine = new FPEFF1Engine(new SM4Engine());
 
         // Based on the code, I need to solve the equation `Math.pow(radix, 2) >= 1000000` to find the minimum radix value when var2 is fixed at 2.
         //

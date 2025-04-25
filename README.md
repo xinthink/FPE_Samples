@@ -11,6 +11,58 @@ Format-Preserving Encryption (FPE) is a cryptographic method that encrypts data 
 - Custom format data encryption
 - Legacy system integration where data format must be preserved
 
+
+### FF1 Algorithm
+
+```mermaid
+flowchart TD
+    subgraph FF1 Algorithm Principle
+        A[Plaintext input] --> B[Split into left half L0 and right half R0]
+        B --> C{Feistel round function iteration #40;10 rounds#41;}
+        C --> D[Process R0 in the first round]
+        D --> E[Encrypt R0 ⊕ Key using block cipher #40;e.g., AES#41;]
+        E --> F[XOR result with L0, generate new left half L1 = R0]
+        F --> G[Right half R1 = L0 ⊕ F#40;R0#41;]
+        G --> H[Swap L1 and R1]
+        H --> C
+        C --> I[...Repeat for 10 rounds...]
+        I --> J[Combine left half L10 and right half R10]
+        J --> K[Output ciphertext]
+    end
+
+    subgraph Block Cipher Role
+        E --> M[Block cipher #40;e.g., AES#41; as the core of round function]
+        M --> N[Input: Mixture of R_i and key]
+        N --> O[Output: Encrypted obscured data]
+    end
+
+    style C fill:#f9f,stroke:#333
+    style M fill:#9f9,stroke:#333
+```
+---
+
+**Explanation**
+
+1. Feistel Structure Flow:
+   - Plaintext is split into L0 and R0, processed through 10 rounds of iteration.
+   - In each round, the right half R_i is processed by the round function (using a block cipher like AES), XORed with the left half L_i to generate the new right half. The original right half becomes the new left half. (Note: The diagram labels F and G describe this slightly differently, but this is the standard Feistel process FF1 follows).
+- After each round, the left and right halves are swapped before proceeding to the next round.
+2. Role of the Block Cipher:
+   - The block cipher (e.g., AES) acts as the core of the round function, encrypting a value derived from the right-half data mixed with the key (and tweak/round information), generating an obfuscated result.
+   - The cryptographic strength of the block cipher directly determines FF1's resistance to attacks.
+3. Output Combination:
+   - After 10 rounds of iteration, the final left and right halves are combined to produce the format-preserving ciphertext.
+
+
+---
+
+**Key Points**
+
+- Symmetry of the Feistel Network: Encryption and decryption use the same structure; only the order of round keys/operations needs to be reversed.
+- Format-Preserving Property: The length and character set of the input and output data are identical (e.g., encrypting a credit card number still results in a 16-digit number).
+- Security Dependency: The algorithm's security relies on both the cryptographic strength of the underlying block cipher and the number of Feistel rounds (FF1 uses 10 rounds).
+
+
 ## Project Structure
 
 ```
